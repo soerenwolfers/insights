@@ -5,6 +5,10 @@ quickedit: Non-intrusive notetaking
 
 This tool allows one to take quick notes of sudden realizations or small insights with a few key strokes, thus without much disturbing work on something else. 
 
+Installation:
+
+Relies on package :code:`swutil`, which can be installed with :code:`pip install swutil`. 
+
 Usage:
 
 1) Create a keyboard shortcut, e.g. :code:`<Super-I>` to :code:`quickedit.py` e.g. with :code:`compizconfigsettingsmanager` on Ubuntu. 
