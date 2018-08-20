@@ -3,29 +3,35 @@ import os
 import subprocess
 import re
 import sys
-from swutil.aux import string_dialog, warning_box
+from swutil.aux import string_dialog
+from tkinter import messagebox
 from swutil.files import find_directories,find_files, start_file
-DIR = '.' 
+DIR = '.'
 EDITOR = 'gvim'
 TYPE = 'tex'
 if not os.path.isdir(DIR):
-    warning_box('Insights','DIR does not exist')
+    messagebox.showerror('Insights','DIR does not exist')
     sys.exit()
-project_name = string_dialog('Insights','Enter filename')
-show = project_name[0]=='!'
+name = string_dialog('Insights','Enter filename')
+show = name[0]=='!'
 if show:
-    project_name=project_name[1:]
-regexp = re.compile(project_name+'.*',re.IGNORECASE)
-choices = find_directories(pattern=regexp,path = DIR, match_name = True,)
-if not choices:
-    warning_box('Insights','No matching insight file')
-    sys.exit()
-project_dir = os.path.join(DIR,min(choices,key = lambda choice:len(choice)))
-project_tex = find_files(path = project_dir, pattern ='*.'+TYPE,match_name=True)[0]
-os.chdir(project_dir)
-if show:
-    subprocess.run(['pdflatex','-interaction=nonstopmode',project_tex])
-    project_pdf = project_tex[:-4]+'.pdf'
-    start_file(project_pdf)
+    name=name[1:]
+regexp = re.compile(name+'.*',re.IGNORECASE)
+dir_choices = find_directories(pattern=regexp,path = DIR, match_name = True)
+if not dir_choices:
+    file_choices = find_files(path = DIR,pattern = name + '.' + TYPE,match_name=True)
 else:
-    subprocess.call([EDITOR,project_tex])
+    dir_path = os.path.join(DIR,min(dir_choices,key = lambda choice:len(choice)))
+    file_choices = find_files(path = dir_path, pattern ='*.'+TYPE,match_name=True)
+if not file_choices:
+    messagebox.showerror('Insights','Could not find matching insight file')
+    sys.exit()
+file_path = file_choices[0]
+dir_path = os.path.split(file_path)[0]
+os.chdir(dir_path)
+if show:
+    subprocess.run(['pdflatex','-interaction=nonstopmode',file_path])
+    pdf = file_path[:-4]+'.pdf'
+    start_file(pdf)
+else:
+    subprocess.call([EDITOR,file_path])
