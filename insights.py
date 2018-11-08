@@ -2,20 +2,22 @@
 import os
 import subprocess
 import re
+import shlex
 import sys
 from swutil.aux import string_dialog
 from tkinter import messagebox
 from swutil.files import find_directories,find_files, start_file
 DIR = '.'
 EDITOR = 'gvim'
+EDITOR = 'gnome-terminal -- bash -c "vim {}"'
 TYPE = 'tex'
 if not os.path.isdir(DIR):
     messagebox.showerror('Insights','DIR does not exist')
     sys.exit()
 name = string_dialog('Insights','Enter filename')
-show = name[0]=='!'
+show = name[-1]=='!'
 if show:
-    name=name[1:]
+    name=name[0:-1]
 regexp = re.compile(name+'.*',re.IGNORECASE)
 dir_choices = find_directories(pattern=regexp,path = DIR, match_name = True)
 if not dir_choices:
@@ -34,4 +36,8 @@ if show:
     pdf = file_path[:-4]+'.pdf'
     start_file(pdf)
 else:
-    subprocess.call([EDITOR,file_path])
+    if '{}' in EDITOR:
+        EDITOR = EDITOR.format(file_path)
+    else:
+        EDITOR = EDITOR+' '+file_path
+    subprocess.call(shlex.split(EDITOR))
