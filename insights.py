@@ -9,7 +9,7 @@ from tkinter import messagebox
 from swutil.files import find_directories,find_files, start_file
 DIR = '.'
 EDITOR = 'gvim'
-EDITOR = 'gnome-terminal -- bash -c "vim {}"'
+EDITOR = 'gnome-terminal -- bash -c "stty -ixon; vim {}"'
 TYPE = 'tex'
 if not os.path.isdir(DIR):
     messagebox.showerror('Insights','DIR does not exist')
